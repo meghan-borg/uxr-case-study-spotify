@@ -41,17 +41,16 @@ data_sub <- data_sub %>%
                                album == "1989" | album == "1989 (Taylor's Version)" ~ "1989"))
 
 # Reorder TV factor
-
 new_order <- c("Fearless", "Speak Now", "Red", "1989")
+
+# Reorder album
+new_order_album <- c("1989", "1989 (Taylor's Version)", "Red", "Red (Taylor's Version)", "Speak Now", "Speak Now (Taylor's Version)", "Fearless", "Fearless (Taylor's Version)")
+
+# data_sub$tv_status <- factor(data_sub$tv_status)
+# ggplot(data_sub, aes(fill=tv_status, y=average_popularity, x=album_rec)) + 
+#   geom_bar(position="stack", stat="identity")
+data_sub$album <- factor(data_sub$album, levels = new_order_album)
 data_sub$album_rec <- factor(data_sub$album_rec, levels = new_order)
-
-new_order2 <- c("1989", "1989 (Taylor's Version)", "Red", "Red (Taylor's Version)", 
-                "Speak Now", "Speak Now (Taylor's Version)", "Fearless", "Fearless (Taylor's Version)")
-data_sub$album <- factor(data_sub$album, levels = new_order2)
-
-
-
-
 data_sub$tv_status <- factor(data_sub$tv_status, labels = c("Original Version", "Taylor's Version"))
 
 ggplot(data_sub, aes(fill=tv_status, y=average_popularity, x=album_rec)) + 
@@ -60,40 +59,33 @@ ggplot(data_sub, aes(fill=tv_status, y=average_popularity, x=album_rec)) +
   theme_classic() +
   theme(legend.position = "right", 
         text = element_text(family = "sans", size = 20), 
-        axis.title = element_text(size = 16), 
-        axis.text = element_text(color = "black"),
+        axis.title = element_text(size = 25), 
+        axis.text = element_text(color = "black", size = 16),
         plot.title = element_text(hjust= 0.5, face = "bold")) +
-  labs(title = "\n Spotify Popularity of Original Albums vs Taylor's Version", y = "\n Popularity", x = "\n Album", fill = "Album Version") +
+  labs(title = "\n Spotify Album Popularity of Original Versions vs Taylor's Version", y = "\n Popularity", x = "\n Album", fill = "Album Version") +
   scale_fill_manual(values = c("#B0B0B0", "#5C5C5C"))
 
-ggplot(data_sub, aes(fill=album, y=average_popularity, x=album)) +
+
+
+# Create a grouping variable
+data_sub$group <- rep(1:(nrow(data_sub) / 2), each = 2)
+data_sub$group <- factor(data_sub$group)
+
+ggplot(data_sub, aes(fill=album, y=average_popularity, x=album, group = group)) +
   geom_bar(position="dodge", stat="identity") +
-  geom_text(aes(label = round(average_popularity)),
-            position = position_stack(vjust = 1, reverse = TRUE),
-            size = 7, hjust = 1.3, color = "white") +
   ylim(0, 100) +
   coord_flip() +
   theme_classic() +
-  theme(legend.position = "none", 
+  theme(legend.position = "none",
         text = element_text(family = "sans", size = 20), 
-        axis.title.y = element_text(size = 16),  # Modify y-axis title appearance if needed
-        axis.text.y = element_text(color = "black"),  # Modify y-axis text appearance if needed
-        axis.ticks = element_blank(),  # Keep y-axis ticks
-        axis.line.y = element_blank(),  # Keep y-axis line
-        axis.title.x = element_blank(),  # Remove x-axis title
-        axis.text.x = element_blank(),   # Remove x-axis labels
-        axis.ticks.x = element_blank(),  # Remove x-axis ticks
-        axis.line.x = element_blank(),   # Remove x-axis line
-        plot.title = element_text(hjust = 0.5, face = "bold")) +
-  labs(title = "\n Spotify Popularity of Original Albums vs Taylor's Version", y = "\n Popularity", x = "") +
-  scale_fill_manual(values = c("#93CDDF","#3281B5","#BB777A", "#97373D","#ADAAC8","#6A62A1","#EDD685","#E2A641")) +
-  theme(axis.text.y = element_text(margin = margin(r = -30)))
+        axis.title = element_text(size = 25), 
+        axis.text = element_text(color = "black"),
+        plot.title = element_text(hjust= 0.5, face = "bold")) +
+  labs(title = "\n Spotify Album Popularity of Original Versions vs Taylor's Version", y = "\n Popularity", x = "\n Album") +
+  #facet_grid(group ~.)+
+  scale_fill_manual(values = c("#93CDDF", "#3281B5","#BB777A","#97373D", "#ADAAC8", "#6A62A1", "#EDD685", "#E2A641"))
 
-# library(ggpubr)
-# fullplot <- ggarrange(plot1, plot2, nrow = 1, ncol = 2)
-# annotate_figure(fullplot, top = text_grob("Spotify Popularity of Original Albums vs Taylor's Version", color = "black", face = "bold", size = "25"))
-
-
+data_sub$album
 
 
 
@@ -113,6 +105,38 @@ ggplot(data=data_sub, aes(x=dose, y=len, fill=supp)) +
 
 
 
+# Assuming data_sub is your data frame
+
+# Create a grouping variable
+data_sub$group <- rep(1:(nrow(data_sub) / 2), each = 2)
+
+# Reorder album as needed
+new_order <- c("Album1", "Album2", "Album3", "Album4", "Album5", "Album6", "Album7", "Album8")
+data_sub$album <- factor(data_sub$album, levels = new_order)
+
+# Creating the grouped bar plot with adjusted widths
+library(ggplot2)
+
+ggplot(data_sub, aes(fill = album, y = average_popularity, x = album, group = group)) +
+  geom_bar(position = position_dodge(width = 1.6), stat = "identity") +  # Adjust width here
+  ylim(0, 100) +
+  coord_flip() +
+  theme_classic() +
+  theme(
+    legend.position = "none",
+    text = element_text(family = "sans", size = 20),
+    axis.title = element_text(size = 25),
+    axis.text = element_text(color = "black"),
+    plot.title = element_text(hjust = 0.5, face = "bold")
+  ) +
+  labs(
+    title = "\n Spotify Album Popularity of Original Versions vs Taylor's Version",
+    y = "\n Popularity",
+    x = "\n Album"
+  ) +
+  scale_fill_manual(
+    values = c("#93CDDF", "#3281B5", "#BB777A", "#97373D", "#ADAAC8", "#6A62A1", "#EDD685", "#E2A641")
+  )
 
 
 
